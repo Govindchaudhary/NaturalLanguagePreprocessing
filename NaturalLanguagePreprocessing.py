@@ -31,3 +31,32 @@ for i in range(0,1000):
       review = [ps.stem(word) for word in review if not word in set(stopwords.words('english'))]
       review = ' '.join(review)
       corpus.append(review)
+      
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+cv = CountVectorizer(max_features=1500) # we are reducing the features to 1500 ie we are taking only the 1500 most frequent words in the review
+
+#basically creating the matrix of features
+X = cv.fit_transform(corpus).toarray() #creating a huge sparse matrix by putting all the unique words in the reviews in diff column
+
+y= dataset.iloc[:,1].values # independent variable
+
+
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+
+# Fitting classifier to the Training set
+from sklearn.naive_bayes import GaussianNB
+classifier = GaussianNB()
+classifier.fit(X_train,y_train)
+
+# Predicting the Test set results
+y_pred = classifier.predict(X_test)
+
+# Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
